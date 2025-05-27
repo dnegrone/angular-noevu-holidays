@@ -3,17 +3,11 @@ export interface Holiday {
   startDate: string;
   endDate: string;
   type: 'Public' | 'Optional' | 'Bank';
-  name: {
-    language: string;
-    text: string;
-  }[];
+  name: HolidayName[];
   regionalScope: 'National' | 'Regional' | 'Local';
   temporalScope: 'FullDay' | 'HalfDay';
   nationwide: boolean;
-  subdivisions?: {
-    code: string;
-    shortName: string;
-  }[];
+  subdivisions?: Subdivision[];
 }
 
 export interface HolidayName {

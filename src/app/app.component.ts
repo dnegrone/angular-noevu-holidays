@@ -1,12 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { HolidayService } from './core/services/holiday.service';
 import { Holiday } from './core/models/holiday.model';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [CommonModule, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -16,6 +17,8 @@ export class AppComponent implements OnInit {
     public holidays: Holiday[] = [];
     public errorMessage: string | null = null;
     public isLoading: boolean = false;
+
+    public currentYear = new Date().getFullYear()
 
     constructor () {}
 

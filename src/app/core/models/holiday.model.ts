@@ -8,6 +8,10 @@ export interface Holiday {
   temporalScope: 'FullDay' | 'HalfDay';
   nationwide: boolean;
   subdivisions?: Subdivision[];
+  _isOnWorkDay?: boolean;
+  _isFutureHoliday?: boolean;
+  _isTodayHoliday?: boolean;
+  _dayOfWeekName?: string;
 }
 
 export interface HolidayName {

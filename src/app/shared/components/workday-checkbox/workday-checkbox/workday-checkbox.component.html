@@ -1,0 +1,9 @@
+<label class="inline-flex items-center cursor-pointer p-2 border rounded-md hover:bg-blue-50 transition-colors duration-200"
+    [ngClass]="{'bg-blue-100 border-blue-400': isChecked, 'bg-gray-100 border-gray-300': !isChecked}">
+    <input type="checkbox"
+        class="form-checkbox h-5 w-5 text-blue-600 rounded"
+        [value]="dayValue"
+        [checked]="isChecked"
+        (change)="onCheckboxChange($event)">
+    <span class="ml-2 text-gray-700 font-medium">{{ dayName }}</span>
+</label>

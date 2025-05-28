@@ -33,15 +33,12 @@
         <label class="block text-gray-700 text-sm font-bold mb-2">Set your Work Days:</label>
         <div class="flex flex-wrap gap-2">
           @for (day of daysOfWeek(); track day.name) {
-            <label class="inline-flex items-center cursor-pointer p-2 border rounded-md hover:bg-blue-50 transition-colors duration-200"
-                   [ngClass]="{'bg-blue-100 border-blue-400': selectedWorkDays().includes(day.value), 'bg-gray-100 border-gray-300': !selectedWorkDays().includes(day.value)}">
-              <input type="checkbox"
-                     class="form-checkbox h-5 w-5 text-blue-600 rounded"
-                     [value]="day.value"
-                     [checked]="selectedWorkDays().includes(day.value)"
-                     (change)="onWorkDayChange(day.value, $event)">
-              <span class="ml-2 text-gray-700 font-medium">{{ day.name }}</span>
-            </label>
+            <app-workday-checkbox
+              [dayName]="day.name"
+              [dayValue]="day.value"
+              [isChecked]="selectedWorkDays().includes(day.value)"
+              (dayChange)="onWorkDayChange($event)">
+            </app-workday-checkbox>
           }
         </div>
       </div>

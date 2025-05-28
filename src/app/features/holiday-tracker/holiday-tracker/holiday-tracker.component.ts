@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, signal, effect, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, inject, signal, effect, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from "@angular/forms";
 
 import { HolidayService } from '../../../core/services/holiday.service';
+import { LocalStorageService } from '../../../core/services/local-storage.service';
 import { Holiday, Subdivision } from '../../../core/models/holiday.model';
 import { DaysOfWeek } from '../../../core/enums/days-of-week.enum';
 
@@ -15,7 +16,7 @@ import { DaysOfWeek } from '../../../core/enums/days-of-week.enum';
 })
 export class HolidayTrackerComponent implements OnInit {
   private holidayService = inject(HolidayService);
-  private platformId = inject(PLATFORM_ID);
+  private localStorageService = inject(LocalStorageService);
   private cdr = inject(ChangeDetectorRef);
 
   public today: Date = new Date();
@@ -27,7 +28,7 @@ export class HolidayTrackerComponent implements OnInit {
     { name: 'Tuesday', value: DaysOfWeek.Tuesday },
     { name: 'Wednesday', value: DaysOfWeek.Wednesday },
     { name: 'Thursday', value: DaysOfWeek.Thursday },
-    { name: 'Friday', value: DaysOfWeek.Monday },
+    { name: 'Friday', value: DaysOfWeek.Friday },
   ]);
 
   public DaysOfWeek = DaysOfWeek;
@@ -59,9 +60,7 @@ export class HolidayTrackerComponent implements OnInit {
   public errorMessage = signal<string | null>(null);
   
   constructor() {
-    console.log('HolidayTrackerComponent: initiated');
     effect(() => {
-      console.log('HolidayTrackerComponent: effect triggered');
       const year = this.currentYear();
       const cantonCode = this.selectedCantonCode();
       const workDays = this.selectedWorkDays();
@@ -70,58 +69,37 @@ export class HolidayTrackerComponent implements OnInit {
   }
 
   ngOnInit():void {
-    console.log('HolidayTrackerComponent: ngOnInit triggered');
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadSettings();
-      this.cdr.detectChanges();
-    }
-    else {
-      console.log('Running on server, skipping localStorage load and initial data fetch.');
-    }
+    this.loadSettings();
+    this.cdr.detectChanges();
   }
 
   // Load settings from LocalStorage
   private loadSettings():void {
-    if(isPlatformBrowser(this.platformId)) {
-      try {
-        const savedCanton = localStorage.getItem('selectedCantonCode');
-        const savedYear = localStorage.getItem('selectedYear');
-        const savedWorkDays = localStorage.getItem('selectedWorkDays');
-  
-        if(savedCanton) {
-          this.selectedCantonCode.set(savedCanton);
-        }
-        if(savedYear) {
-          this.currentYear.set(parseInt(savedYear, 10));
-        }
-        if (savedWorkDays) {
-          this.selectedWorkDays.set(JSON.parse(savedWorkDays) as DaysOfWeek[]);
-        }
+    try {
+      const savedCanton = this.localStorageService.getItem('selectedCantonCode');
+      const savedYear = this.localStorageService.getItem('selectedYear');
+      const savedWorkDays = this.localStorageService.getItem('selectedWorkDays');
+
+      if(savedCanton) {
+        this.selectedCantonCode.set(savedCanton);
       }
-      catch (e) {
-        console.error('Error loading settings.', e);
+      if(savedYear) {
+        this.currentYear.set(parseInt(savedYear, 10));
+      }
+      if (savedWorkDays) {
+        this.selectedWorkDays.set(JSON.parse(savedWorkDays) as DaysOfWeek[]);
       }
     }
-    else {
-      console.log('Running on server, skipping localStorage - loadsettings');
+    catch (e) {
+      console.error('Error loading settings.', e);
     }
   }
 
   // Save settings on LocalStorage
   private saveSettings(): void {
-    if(isPlatformBrowser(this.platformId)) {
-      try {
-        localStorage.setItem('selectedCantonCode', this.selectedCantonCode());
-        localStorage.setItem('selectedYear', this.currentYear().toString());
-        localStorage.setItem('selectedWorkDays', JSON.stringify(this.selectedWorkDays()));
-      }
-      catch (e) {
-        console.error('Error saving settings to localStorage.', e);
-      }
-    }
-    else {
-      console.log('Running on server, skipping localStorage - save storage');
-    }
+    this.localStorageService.setItem('selectedCantonCode', this.selectedCantonCode());
+    this.localStorageService.setItem('selectedYear', this.currentYear().toString());
+    this.localStorageService.setItem('selectedWorkDays', JSON.stringify(this.selectedWorkDays()));
   }
 
   // Fetch and Filter Holidays

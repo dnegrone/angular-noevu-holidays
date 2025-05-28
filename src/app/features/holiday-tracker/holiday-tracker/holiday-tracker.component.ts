@@ -1,16 +1,17 @@
 import { Component, OnInit, inject, signal, effect, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from "@angular/forms";
 
 import { HolidayService } from '../../../core/services/holiday.service';
 import { LocalStorageService } from '../../../core/services/local-storage.service';
 import { Holiday, Subdivision } from '../../../core/models/holiday.model';
 import { DaysOfWeek } from '../../../core/enums/days-of-week.enum';
+import { HolidayCardComponent } from '../../../shared/component/holiday-card/holiday-card/holiday-card.component';
 
 @Component({
   selector: 'app-holiday-tracker',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, HolidayCardComponent],
   templateUrl: './holiday-tracker.component.html',
   styleUrl: './holiday-tracker.component.scss'
 })
@@ -144,7 +145,7 @@ export class HolidayTrackerComponent implements OnInit {
       const daysOfWeek = holidayDate.getDay() as DaysOfWeek;
 
       const isOnWorkDay = selectedWorkDays.includes(daysOfWeek);
-      const isFutureHoliday = holidayDate >= this.today;
+      const isFutureHoliday = holidayDate > this.today;
       const isTodayHoliday = holidayDate.getTime() === this.today.getTime();
 
       holidaysOnWorkDays.push({

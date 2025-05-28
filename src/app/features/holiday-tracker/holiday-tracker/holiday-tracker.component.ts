@@ -6,12 +6,13 @@ import { HolidayService } from '../../../core/services/holiday.service';
 import { LocalStorageService } from '../../../core/services/local-storage.service';
 import { Holiday, Subdivision } from '../../../core/models/holiday.model';
 import { DaysOfWeek } from '../../../core/enums/days-of-week.enum';
-import { HolidayCardComponent } from '../../../shared/component/holiday-card/holiday-card/holiday-card.component';
+import { HolidayCardComponent } from '../../../shared/components/holiday-card/holiday-card/holiday-card.component';
+import { WorkdayCheckboxComponent } from '../../../shared/components/workday-checkbox/workday-checkbox/workday-checkbox.component';
 
 @Component({
   selector: 'app-holiday-tracker',
   standalone: true,
-  imports: [CommonModule, FormsModule, HolidayCardComponent],
+  imports: [CommonModule, FormsModule, HolidayCardComponent, WorkdayCheckboxComponent],
   templateUrl: './holiday-tracker.component.html',
   styleUrl: './holiday-tracker.component.scss'
 })
@@ -185,17 +186,18 @@ export class HolidayTrackerComponent implements OnInit {
   }
 
   // Change Workday
-  onWorkDayChange(day: DaysOfWeek, event: Event): void {
-    const checkbox = event.target as HTMLInputElement;
-    let currentWorkDays = this.selectedWorkDays();
+  onWorkDayChange(event: {day: DaysOfWeek, checked: boolean}): void {
+    let currentWorkDays = new Set(this.selectedWorkDays());
+    const isChecked = event.checked;
     
-    if (checkbox.checked) {
-      currentWorkDays = [...currentWorkDays, day].sort((a, b) => a - b);
+    if (isChecked) {
+      currentWorkDays.add(event.day);
     }
     else {
-      currentWorkDays = currentWorkDays.filter(dayValue => dayValue !== day);
+      currentWorkDays.delete(event.day);
     }
-    this.selectedWorkDays.set(currentWorkDays);
+    const updatedWorkDays = [...currentWorkDays].sort((a, b) => a - b);
+    this.selectedWorkDays.set(updatedWorkDays);
   }
 
   // Getting Canton name
